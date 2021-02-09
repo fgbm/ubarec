@@ -21,5 +21,10 @@ setup(
     zip_safe=False,
     entry_points={
         'console_scripts': ['ubarec=src.main:app'],
-    }
+    },
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Topic :: Utilities",
+        "License :: OSI Approved :: MIT License",
+    ],
 )
