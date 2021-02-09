@@ -1,7 +1,5 @@
 from setuptools import setup
 
-from src.config import VERSION
-
 setup(
     name='ubarec',
     description='Universal backup and recovery using S3 repo',
@@ -9,7 +7,7 @@ setup(
     author='Chmelyuk Vladislav',
     author_email='neimp@yandex.ru',
     license='MIT',
-    version=VERSION + '.1',
+    version='0.1.2',
     packages=['src'],
     install_requires=[
         'typer==0.3.2',
