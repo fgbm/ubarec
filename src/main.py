@@ -53,7 +53,7 @@ def restore(
 
 @app.command()
 def configure():
-    config = Config.read(False)
+    config = Config.read(False) or Config()
     config.initialize()
     config.save()
 
