@@ -11,7 +11,7 @@
 
 Основные зависимости и пакет устанавливаются легко:
 ```bash
-sudo apt install -y p7zip-full unixodbc-dev python3.8 python3-pip && pip3 install ubarec
+sudo apt install -y p7zip-full unixodbc-dev python3.8 python3-pip && python3.8 -m pip install ubarec
 ```
 
 При работе с MS SQL необходимо установить соответствующий [драйвер ODBC](https://docs.microsoft.com/ru-ru/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server).
@@ -32,7 +32,7 @@ py -m pip install ubarec
 
 ## Настройка
 
-Для первичной настроки приложения или редактирования существующей конфигурации следует запустить приложение
+Для первичной настройки приложения или редактирования существующей конфигурации следует запустить приложение
 с ключом ```configure```:
 ```powershell
 ubarec configure
