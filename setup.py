@@ -7,7 +7,7 @@ setup(
     author='Chmelyuk Vladislav',
     author_email='neimp@yandex.ru',
     license='MIT',
-    version='0.1.2',
+    version='0.1.3',
     packages=['src'],
     install_requires=[
         'typer==0.3.2',
