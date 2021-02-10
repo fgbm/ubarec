@@ -1,17 +1,18 @@
 from __future__ import annotations
-from enum import Enum
 
-from appdirs import user_config_dir
-from pathlib import Path
 import json
-import typer
 import tempfile
+from enum import Enum
+from pathlib import Path
 
+import pyodbc
+import typer
+from appdirs import user_config_dir
 from click import Choice
 
 APPNAME = 'ubarec'
-VERSION = '0.1'
-CONFIG_FILE = Path(user_config_dir(APPNAME, False, VERSION)) / 'config.json'
+CONFIG_VERSION = '0.1'
+CONFIG_FILE = Path(user_config_dir(APPNAME, False, CONFIG_VERSION)) / 'config.json'
 
 
 class DatabaseType(str, Enum):
@@ -69,7 +70,7 @@ class Config:
         ])
 
     @classmethod
-    def read(cls, on_err_init:bool = True) -> Config:
+    def read(cls, on_err_init: bool = True) -> Config:
         try:
             with open(CONFIG_FILE, 'r', encoding='utf8') as config_file:
                 return cls(**json.load(config_file))
@@ -90,17 +91,17 @@ class Config:
         self.service_name = typer.prompt('Service name', self.service_name)
         self.endpoint_url = typer.prompt('Endpoint URL', self.endpoint_url)
         self.region_name = typer.prompt('Region name', self.region_name)
-        self.aws_access_key_id = typer.prompt('S3 accesss id key', hide_input=True)
-        self.aws_secret_access_key = typer.prompt('S3 accesss secret key', hide_input=True)
+        self.aws_access_key_id = typer.prompt('S3 accesss id key (echo is suppressed)', hide_input=True)
+        self.aws_secret_access_key = typer.prompt('S3 accesss secret key (echo is suppressed)', hide_input=True)
         self.bucket_name = typer.prompt('Bucket name', self.bucket_name)
-        self.zip_password = typer.prompt('7z password', hide_input=True)
-        self.db_type = typer.prompt('Database type', self.db_type, type=DatabaseType)
+        self.zip_password = typer.prompt('7z password (echo is suppressed)', hide_input=True)
+        self.db_type = typer.prompt('Database type', self.db_type, type=Choice([db.value for db in DatabaseType]))
         self.db_host = typer.prompt('Database hostname', self.db_host)
         self.db_port = typer.prompt('Database connection port', self.db_port, type=int)
         self.db_username = typer.prompt('Database username', self.db_username)
-        self.db_password = typer.prompt('Database password', self.db_password, hide_input=True)
+        self.db_password = typer.prompt('Database password (echo is suppressed)', self.db_password, hide_input=True)
 
         if self.db_type == DatabaseType.mssql:
-            self.db_driver = typer.prompt('Database ODBC driver name', self.db_driver)
+            self.db_driver = typer.prompt('Database ODBC driver name', self.db_driver, type=Choice(pyodbc.drivers()))
 
         self.temp_path = typer.prompt('Location for temporary files', self.temp_path)
