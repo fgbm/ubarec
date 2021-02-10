@@ -1,5 +1,4 @@
-from typing import Dict, Type
-from typing import List
+from typing import Dict, Type, List
 
 import typer
 
@@ -7,8 +6,6 @@ from .__init__ import __version__
 from .backup import BaseBackup, BackupMSSql, BackupPostgres
 from .config import Config
 from .restore import BaseRestore, RestoreMSSql, RestorePostres
-
-app = typer.Typer()
 
 BACKUP_DISPATCHER: Dict[str, Type[BaseBackup]] = {
     'mssql'   : BackupMSSql,
@@ -20,13 +17,12 @@ RESTORE_DISPATCHER: Dict[str, Type[BaseRestore]] = {
     'postgres': RestorePostres
 }
 
-
-@app.callback()
-def callback():
-    f"""
-    Universal backup and recovery with S3 repository
+HELP = f"""
+    Universal backup and recovery with S3 repository\n
     version {__version__}
-    """
+"""
+
+app = typer.Typer(help=HELP)
 
 
 @app.command()
