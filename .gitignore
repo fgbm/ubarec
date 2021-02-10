@@ -3,3 +3,4 @@ venv
 settings.py
 dist
 *.egg-info
+requirements.txt
