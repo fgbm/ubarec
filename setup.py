@@ -1,6 +1,9 @@
 import re
 
-from setuptools import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 with open('ubarec/__init__.py', 'r') as file:
     regex_version = r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]'
