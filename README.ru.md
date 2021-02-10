@@ -1,3 +1,8 @@
+![Pypi version](https://img.shields.io/pypi/v/ubarec.svg)
+![Python versions](https://img.shields.io/badge/python-3.7%2B%20%7C%20PyPy-blue.svg)
+![License](https://img.shields.io/github/license/fgbm/ubarec.svg)
+![Downloads](https://img.shields.io/pypi/dm/ubarec)
+
 # Ubarec
 
 [English](README.md)
