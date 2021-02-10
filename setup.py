@@ -2,12 +2,12 @@ import re
 
 from setuptools import setup
 
-with open("loguru/__init__.py", "r") as file:
+with open('ubarec/__init__.py', 'r') as file:
     regex_version = r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]'
     version = re.search(regex_version, file.read(), re.MULTILINE).group(1)
 
 with open("README.md", "rb") as file:
-    readme = file.read().decode("utf-8")
+    readme = file.read().decode('utf-8')
 
 setup(
     name='ubarec',
@@ -47,5 +47,5 @@ setup(
         "Programming Language :: Python :: Implementation :: PyPy",
         "Programming Language :: Python :: Implementation :: CPython",
     ],
-    python_requires=">=3.7",
+    python_requires='>=3.7',
 )
