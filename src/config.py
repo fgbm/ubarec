@@ -7,6 +7,8 @@ import json
 import typer
 import tempfile
 
+from click import Choice
+
 APPNAME = 'ubarec'
 VERSION = '0.1'
 CONFIG_FILE = Path(user_config_dir(APPNAME, False, VERSION)) / 'config.json'
@@ -96,6 +98,9 @@ class Config:
         self.db_host = typer.prompt('Database hostname', self.db_host)
         self.db_port = typer.prompt('Database connection port', self.db_port, type=int)
         self.db_username = typer.prompt('Database username', self.db_username)
-        self.db_password = typer.prompt('Database password', self.db_password)
-        self.db_driver = typer.prompt('Database ODBC driver name', self.db_driver)
+        self.db_password = typer.prompt('Database password', self.db_password, hide_input=True)
+
+        if self.db_type == DatabaseType.mssql:
+            self.db_driver = typer.prompt('Database ODBC driver name', self.db_driver)
+
         self.temp_path = typer.prompt('Location for temporary files', self.temp_path)
