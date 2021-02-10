@@ -41,9 +41,7 @@ def restore(
     config = Config.read()
 
     if do_restore:
-        user_agreement = typer.confirm('Are you sure about recovery? The current data will be changed!')
-        if not user_agreement:
-            raise typer.Abort()
+        typer.confirm('Are you sure about recovery? The current data will be changed!', abort=True)
 
     typer.echo(f'\U000026A1 Process restore {database}')
     RESTORE_DISPATCHER[config.db_type](database, do_restore=do_restore)
