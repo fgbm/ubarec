@@ -3,6 +3,7 @@ from typing import List
 
 import typer
 
+from .__init__ import __version__
 from .backup import BaseBackup, BackupMSSql, BackupPostgres
 from .config import Config
 from .restore import BaseRestore, RestoreMSSql, RestorePostres
@@ -18,6 +19,14 @@ RESTORE_DISPATCHER: Dict[str, Type[BaseRestore]] = {
     'mssql'   : RestoreMSSql,
     'postgres': RestorePostres
 }
+
+
+@app.callback()
+def callback():
+    f"""
+    Universal backup and recovery with S3 repository
+    version {__version__}
+    """
 
 
 @app.command()
@@ -54,7 +63,3 @@ def configure():
     config = Config.read(False) or Config()
     config.initialize()
     config.save()
-
-
-if __name__ == "__main__":
-    app()
