@@ -20,16 +20,11 @@ RESTORE_DISPATCHER: Dict[str, Type[BaseRestore]] = {
     'postgres': RestorePostres
 }
 
-HELP = f"""
-    Universal backup and recovery with S3 repository\n
-    version {__version__}
-"""
-
 LOG_FILENAME = Path(user_log_dir('ubarec', False)) / 'errors.log'
 LOG_FILENAME.parent.mkdir(parents=True, exist_ok=True)
 logger.add(LOG_FILENAME, level='ERROR', rotation="5 MB", diagnose=False)
 
-app = typer.Typer(help=HELP)
+app = typer.Typer()
 
 
 @app.command()
@@ -69,3 +64,8 @@ def configure():
     config = Config.read(False) or Config()
     config.initialize()
     config.save()
+
+
+@app.command()
+def version():
+    typer.echo(__version__)
