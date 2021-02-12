@@ -1,6 +1,9 @@
+from pathlib import Path
 from typing import Dict, Type, List
 
 import typer
+from appdirs import user_log_dir
+from loguru import logger
 
 from .__init__ import __version__
 from .backup import BaseBackup, BackupMSSql, BackupPostgres
@@ -22,10 +25,15 @@ HELP = f"""
     version {__version__}
 """
 
+LOG_FILENAME = Path(user_log_dir('ubarec', False)) / 'errors.log'
+LOG_FILENAME.parent.mkdir(parents=True, exist_ok=True)
+logger.add(LOG_FILENAME, level='ERROR', rotation="5 MB", diagnose=False)
+
 app = typer.Typer(help=HELP)
 
 
 @app.command()
+@logger.catch
 def backup(
         databases: List[str] = typer.Argument(..., help='Database list')
 ):
@@ -39,6 +47,7 @@ def backup(
 
 
 @app.command()
+@logger.catch
 def restore(
         database: str = typer.Argument(..., help='Database name'),
         do_restore: bool = typer.Option(False, help='Restore database from backup')
@@ -55,6 +64,7 @@ def restore(
 
 
 @app.command()
+@logger.catch
 def configure():
     config = Config.read(False) or Config()
     config.initialize()

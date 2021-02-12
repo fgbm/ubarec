@@ -28,7 +28,8 @@ setup(
         'pyodbc==4.0.30',
         'colorama==0.4.4',
         'boto3==1.17.4',
-        'appdirs==1.4.4'
+        'appdirs==1.4.4',
+        'loguru==0.5.3'
     ],
     zip_safe=False,
     entry_points={
