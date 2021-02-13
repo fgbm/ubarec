@@ -6,18 +6,14 @@ from appdirs import user_log_dir
 from loguru import logger
 
 from .__init__ import __version__
-from .backup import BaseBackup, BackupMSSql, BackupPostgres
+from .backup import Backup
 from .config import Config
-from .restore import BaseRestore, RestoreMSSql, RestorePostres
+from .drivers import DatabaseBase, DatabaseMsSql, DatabasePostgres
+from .restore import Restore
 
-BACKUP_DISPATCHER: Dict[str, Type[BaseBackup]] = {
-    'mssql'   : BackupMSSql,
-    'postgres': BackupPostgres
-}
-
-RESTORE_DISPATCHER: Dict[str, Type[BaseRestore]] = {
-    'mssql'   : RestoreMSSql,
-    'postgres': RestorePostres
+DATABASE_DRIVER: Dict[str, Type[DatabaseBase]] = {
+    'mssql'   : DatabaseMsSql,
+    'postgres': DatabasePostgres
 }
 
 LOG_FILENAME = Path(user_log_dir('ubarec', False)) / 'errors.log'
@@ -35,7 +31,8 @@ def backup(
     for database in databases:
         config = Config.read()
         typer.echo(f'\U000026A1 Process backup {database}')
-        BACKUP_DISPATCHER[config.db_type](database)
+        driver = DATABASE_DRIVER[config.db_type](database)
+        Backup(driver)
         typer.echo('')
 
     typer.echo(f'\U0001F389 That\'s all, folks!')
@@ -53,7 +50,8 @@ def restore(
         typer.confirm('Are you sure about recovery? The current data will be changed!', abort=True)
 
     typer.echo(f'\U000026A1 Process restore {database}')
-    RESTORE_DISPATCHER[config.db_type](database, do_restore=do_restore)
+    driver = DATABASE_DRIVER[config.db_type](database)
+    Restore(driver, do_restore=do_restore)
 
     typer.echo(f'\U0001F389 That\'s all, folks!')
 
