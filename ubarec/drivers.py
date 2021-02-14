@@ -88,9 +88,7 @@ class DatabaseMsSql(DatabaseBase):
 
     def restore_data(self):
         cursor = self.get_cursor()
-        query = f"""
-            RESTORE DATABASE [{self.database}] FROM DISK='{self.backup_filename}' WITH REPLACE;
-        """
+        query = f"RESTORE DATABASE [{self.database}] FROM DISK='{self.backup_filename}' WITH REPLACE;"
         cursor.execute(query)
         while cursor.nextset():
             pass
