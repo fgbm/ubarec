@@ -43,7 +43,7 @@ class DatabaseBase(DriverMixin):
         return self.database
 
     def get_cursor(self):
-        raise NotImplemented
+        raise NotImplementedError
 
 
 class DatabasePostgres(DatabaseBase):
