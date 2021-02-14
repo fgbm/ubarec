@@ -11,16 +11,16 @@ class DriverMixin:
         self.cfg: Config = Config.read()
 
     def get_backup_data(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     def restore_data(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     def get_backup_filename(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     def get_backup_name(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     @property
     def backup_name(self):
