@@ -57,7 +57,7 @@ class Restore:
         if self.do_restore:
             self.driver.restore_data()
 
-    @step_function('Garbage cleaning')
+    @step_function('Garbage collect')
     def _clean(self):
         self.clean()
 

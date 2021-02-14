@@ -46,7 +46,7 @@ class Backup:
     def _upload(self):
         self.upload()
 
-    @step_function('Garbage cleaning')
+    @step_function('Garbage collect')
     def _clean(self):
         self.clean()
 
