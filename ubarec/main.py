@@ -35,7 +35,7 @@ def backup(
         Backup(driver)
         typer.echo('')
 
-    typer.echo(f'\U0001F389 That\'s all, folks!')
+    typer.echo('\U0001F389 That\'s all, folks!')
 
 
 @app.command()
@@ -53,7 +53,7 @@ def restore(
     driver = DATABASE_DRIVER[config.db_type](database)
     Restore(driver, do_restore=do_restore)
 
-    typer.echo(f'\U0001F389 That\'s all, folks!')
+    typer.echo('\U0001F389 That\'s all, folks!')
 
 
 @app.command()
