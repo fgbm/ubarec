@@ -1,5 +1,6 @@
 import os
 import subprocess
+from abc import ABC
 
 import pyodbc
 
@@ -31,7 +32,7 @@ class DriverMixin:
         return self.get_backup_filename()
 
 
-class DatabaseBase(DriverMixin):
+class DatabaseBase(DriverMixin, ABC):
     def __init__(self, database: str):
         super().__init__()
         self.database = database
@@ -47,6 +48,9 @@ class DatabaseBase(DriverMixin):
 
 
 class DatabasePostgres(DatabaseBase):
+    def get_cursor(self):
+        pass
+
     def get_backup_data(self):
         pg_environ = os.environ.copy()
         pg_environ['PGPASSWORD'] = self.cfg.db_password
