@@ -1,5 +1,6 @@
 ![Pypi version](https://img.shields.io/pypi/v/ubarec.svg)
 ![Python versions](https://img.shields.io/pypi/pyversions/ubarec)
+![build](https://github.com/fgbm/ubarec/workflows/build/badge.svg)
 ![License](https://img.shields.io/github/license/fgbm/ubarec.svg)
 ![Downloads](https://img.shields.io/pypi/dm/ubarec)
 
