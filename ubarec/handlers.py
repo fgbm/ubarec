@@ -4,6 +4,7 @@ import platform
 from pathlib import Path
 
 import typer
+from loguru import logger
 
 
 def type_done():
@@ -39,7 +40,10 @@ def get_7zip():
             pf_path = next(filter(lambda x: x != '', pf_path_list))
             return str(pf_path / '7-Zip' / '7z.exe')
         except StopIteration:
-            exit('Could not find path to 7-Zip executable file. Is the archiver really installed?')
+            msg = 'Could not find path to 7-Zip executable file. Is the archiver really installed?'
+            logger.error(msg)
+            typer.echo(msg)
+            raise typer.Abort()
 
     else:
         return '7z'

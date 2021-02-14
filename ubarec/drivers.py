@@ -3,6 +3,7 @@ import subprocess
 from abc import ABC
 
 import pyodbc
+from loguru import logger
 
 from .config import Config
 
@@ -51,6 +52,7 @@ class DatabasePostgres(DatabaseBase):
     def get_cursor(self):
         pass
 
+    @logger.catch
     def get_backup_data(self):
         pg_environ = os.environ.copy()
         pg_environ['PGPASSWORD'] = self.cfg.db_password
@@ -62,6 +64,7 @@ class DatabasePostgres(DatabaseBase):
         ], stdout=subprocess.DEVNULL, env=pg_environ)
         process.wait()
 
+    @logger.catch
     def restore_data(self):
         pg_environ = os.environ.copy()
         pg_environ['PGPASSWORD'] = self.cfg.db_password
@@ -75,10 +78,12 @@ class DatabasePostgres(DatabaseBase):
 
 
 class DatabaseMsSql(DatabaseBase):
+    @logger.catch
     def get_cursor(self):
         connection = pyodbc.connect(self.cfg.mssql_connection_string, autocommit=True)
         return connection.cursor()
 
+    @logger.catch
     def get_backup_data(self):
         cursor = self.get_cursor()
         query = f"BACKUP DATABASE [{self.database}] TO DISK='{self.backup_filename}' WITH NOFORMAT, NOINIT, SKIP, NOREWIND;"
@@ -86,6 +91,7 @@ class DatabaseMsSql(DatabaseBase):
         while cursor.nextset():
             pass
 
+    @logger.catch
     def restore_data(self):
         cursor = self.get_cursor()
         query = f"RESTORE DATABASE [{self.database}] FROM DISK='{self.backup_filename}' WITH REPLACE;"

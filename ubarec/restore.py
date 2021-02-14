@@ -4,6 +4,7 @@ import subprocess
 
 import boto3
 import typer
+from loguru import logger
 
 from .config import Config
 from .drivers import DatabaseBase
@@ -66,6 +67,7 @@ class Restore:
     def zip_filename(self):
         return f'{self.driver.backup_filename}.7z'
 
+    @logger.catch
     def find_latest_backup(self) -> str:
         prefix = f'{self.hostname}__{self.driver.backup_name}__'
         session = boto3.session.Session()
@@ -79,6 +81,7 @@ class Restore:
         latest = sorted(objects, key=lambda obj: obj['LastModified'], reverse=True)[0]
         return latest['Key']
 
+    @logger.catch
     def download(self):
         session = boto3.session.Session()
         s3 = session.client(**self.cfg.s3_connection)
@@ -88,6 +91,7 @@ class Restore:
             self.zip_filename
         )
 
+    @logger.catch
     def decompress(self):
         process = subprocess.Popen([
             get_7zip(),
@@ -98,6 +102,7 @@ class Restore:
         ], stdout=subprocess.DEVNULL)
         process.wait()
 
+    @logger.catch
     def clean(self):
         os.remove(self.zip_filename)
         if self.do_restore:

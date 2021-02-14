@@ -8,6 +8,7 @@ from pathlib import Path
 import pyodbc
 import typer
 from appdirs import user_config_dir
+from loguru import logger
 from click import Choice
 
 APPNAME = 'ubarec'
@@ -70,18 +71,24 @@ class Config:
         ])
 
     @classmethod
+    @logger.catch
     def read(cls, on_err_init: bool = True) -> Config:
         try:
             with open(CONFIG_FILE, 'r', encoding='utf8') as config_file:
                 return cls(**json.load(config_file))
         except FileNotFoundError:
+            msg = 'Configuration file not found'
+            typer.echo(msg)
             if on_err_init:
-                typer.echo('Configuration file not found')
                 config = Config()
                 config.initialize()
                 config.save()
                 return config
 
+            logger.error(msg)
+            raise typer.Abort()
+
+    @logger.catch
     def save(self):
         CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
         with open(CONFIG_FILE, 'w', encoding='utf8') as config_file:
