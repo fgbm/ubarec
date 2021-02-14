@@ -43,20 +43,20 @@ class Restore:
 
     # region Hidden "step-by-step" functions
 
-    @step_function('\U0001F6F0 Download archive from repository')
+    @step_function('Download archive from repository')
     def _download(self):
         self.download()
 
-    @step_function('\U0001F513 Unzipping')
+    @step_function('Unzipping')
     def _decompress(self):
         self.decompress()
 
-    @step_function('\U0001F553 Restore database')
+    @step_function('Restore database')
     def _restore(self):
         if self.do_restore:
             self.driver.restore_data()
 
-    @step_function('\U0001F4A5 Garbage cleaning')
+    @step_function('Garbage cleaning')
     def _clean(self):
         self.clean()
 

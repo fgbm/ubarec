@@ -30,12 +30,12 @@ def backup(
 ):
     for database in databases:
         config = Config.read()
-        typer.echo(f'\U000026A1 Process backup {database}')
+        typer.echo(f'Process backup {database}')
         driver = DATABASE_DRIVER[config.db_type](database)
         Backup(driver)
         typer.echo('')
 
-    typer.echo('\U0001F389 That\'s all, folks!')
+    typer.echo('That\'s all, folks!')
 
 
 @app.command()
@@ -49,11 +49,11 @@ def restore(
     if do_restore:
         typer.confirm('Are you sure about recovery? The current data will be changed!', abort=True)
 
-    typer.echo(f'\U000026A1 Process restore {database}')
+    typer.echo(f'Process restore {database}')
     driver = DATABASE_DRIVER[config.db_type](database)
     Restore(driver, do_restore=do_restore)
 
-    typer.echo('\U0001F389 That\'s all, folks!')
+    typer.echo('That\'s all, folks!')
 
 
 @app.command()

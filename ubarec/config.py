@@ -76,7 +76,7 @@ class Config:
                 return cls(**json.load(config_file))
         except FileNotFoundError:
             if on_err_init:
-                typer.echo('Configuration file not found, \U00002708 parameters must be entered')
+                typer.echo('Configuration file not found')
                 config = Config()
                 config.initialize()
                 config.save()
