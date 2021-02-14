@@ -33,11 +33,11 @@ class Backup:
 
     # region Hidden "step-by-step" functions
 
-    @step_function(f'\U0001F47D Dump database')
+    @step_function('\U0001F47D Dump database')
     def _backup(self):
         self.driver.get_backup_data()
 
-    @step_function(f'\U0001F510 Compress dump')
+    @step_function('\U0001F510 Compress dump')
     def _compress(self):
         self.compress()
 
@@ -45,7 +45,7 @@ class Backup:
     def _upload(self):
         self.upload()
 
-    @step_function(f'\U0001F4A5 Garbage cleaning')
+    @step_function('\U0001F4A5 Garbage cleaning')
     def _clean(self):
         self.clean()
 
