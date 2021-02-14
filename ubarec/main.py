@@ -24,7 +24,6 @@ app = typer.Typer()
 
 
 @app.command()
-@logger.catch
 def backup(
         databases: List[str] = typer.Argument(..., help='Database list')
 ):
@@ -39,7 +38,6 @@ def backup(
 
 
 @app.command()
-@logger.catch
 def restore(
         database: str = typer.Argument(..., help='Database name'),
         do_restore: bool = typer.Option(False, help='Restore database from backup')
@@ -57,7 +55,6 @@ def restore(
 
 
 @app.command()
-@logger.catch
 def configure():
     config = Config.read(False) or Config()
     config.initialize()
