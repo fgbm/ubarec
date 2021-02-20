@@ -1,6 +1,6 @@
 import os
 import subprocess
-from abc import ABC
+from abc import ABC, abstractmethod
 
 import pyodbc
 from loguru import logger
@@ -8,21 +8,25 @@ from loguru import logger
 from .config import Config
 
 
-class DriverMixin:
+class DriverMixin(ABC):
     def __init__(self):
         self.cfg: Config = Config.read()
 
+    @abstractmethod
     def get_backup_data(self):
-        raise NotImplementedError
+        ...
 
+    @abstractmethod
     def restore_data(self):
-        raise NotImplementedError
+        ...
 
+    @abstractmethod
     def get_backup_filename(self):
-        raise NotImplementedError
+        ...
 
+    @abstractmethod
     def get_backup_name(self):
-        raise NotImplementedError
+        ...
 
     @property
     def backup_name(self):
@@ -45,13 +49,10 @@ class DatabaseBase(DriverMixin, ABC):
         return self.database
 
     def get_cursor(self):
-        raise NotImplementedError
+        ...
 
 
 class DatabasePostgres(DatabaseBase):
-    def get_cursor(self):
-        pass
-
     @logger.catch
     def get_backup_data(self):
         pg_environ = os.environ.copy()
