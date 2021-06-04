@@ -5,12 +5,10 @@ from abc import ABC, abstractmethod
 import pyodbc
 from loguru import logger
 
-from .config import Config
+from ._defaults import *
 
 
 class DriverMixin(ABC):
-    def __init__(self):
-        self.cfg: Config = Config.read()
 
     @abstractmethod
     def get_backup_data(self):
@@ -43,7 +41,7 @@ class DatabaseBase(DriverMixin, ABC):
         self.database = database
 
     def get_backup_filename(self):
-        return os.path.join(self.cfg.temp_path, f'{self.database}.bak')
+        return os.path.join(TEMP_PATH, f'{self.database}.bak')
 
     def get_backup_name(self):
         return self.database
@@ -56,11 +54,11 @@ class DatabasePostgres(DatabaseBase):
     @logger.catch
     def get_backup_data(self):
         pg_environ = os.environ.copy()
-        pg_environ['PGPASSWORD'] = self.cfg.db_password
+        pg_environ['PGPASSWORD'] = DB_PASS
 
         process = subprocess.Popen([
             'pg_dump', '--format=custom',
-            f'--host={self.cfg.db_host}', f'--port={self.cfg.db_port}', f'--username={self.cfg.db_username}',
+            f'--host={DB_HOST}', f'--port={DB_PORT}', f'--username={DB_USER}',
             f'--file={self.backup_filename}', f'{self.database}'
         ], stdout=subprocess.DEVNULL, env=pg_environ)
         process.wait()
@@ -68,20 +66,30 @@ class DatabasePostgres(DatabaseBase):
     @logger.catch
     def restore_data(self):
         pg_environ = os.environ.copy()
-        pg_environ['PGPASSWORD'] = self.cfg.db_password
+        pg_environ['PGPASSWORD'] = DB_PASS
 
         process = subprocess.Popen([
             'pg_restore', '--clean', '--format=custom',
-            f'--host={self.cfg.db_host}', f'--port={self.cfg.db_port}', f'--username={self.cfg.db_username}',
+            f'--host={DB_HOST}', f'--port={DB_PORT}', f'--username={DB_USER}',
             f'--dbname={self.database}', self.backup_filename
         ], stdout=subprocess.DEVNULL, env=pg_environ)
         process.wait()
 
 
 class DatabaseMsSql(DatabaseBase):
+    @property
+    def mssql_connection_string(self):
+        return ';'.join([
+            f'SERVER={DB_HOST}',
+            f'PORT={DB_PORT}',
+            f'UID={DB_USER}',
+            f'PWD={DB_PASS}',
+            f'DRIVER={DB_DRIVER}'
+        ])
+
     @logger.catch
     def get_cursor(self):
-        connection = pyodbc.connect(self.cfg.mssql_connection_string, autocommit=True)
+        connection = pyodbc.connect(self.mssql_connection_string, autocommit=True)
         return connection.cursor()
 
     @logger.catch

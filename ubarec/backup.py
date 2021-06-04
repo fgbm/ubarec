@@ -5,7 +5,7 @@ import subprocess
 import boto3
 from loguru import logger
 
-from .config import Config
+from ._defaults import *
 from .drivers import DatabaseBase
 from .handlers import step_function, get_7zip, get_now_timestamp
 
@@ -22,10 +22,8 @@ class Backup:
         :param driver: database driver
         :param hostname: override system hostname
         """
-        self.cfg: Config = Config.read()
         self.driver = driver
         self.hostname = hostname
-        self.s3_filename = self._get_s3_filename()
 
         self._backup()
         self._compress()
@@ -52,7 +50,8 @@ class Backup:
 
     # endregion
 
-    def _get_s3_filename(self):
+    @property
+    def s3_filename(self):
         return f'{self.hostname}__{self.driver.backup_name}__{get_now_timestamp()}.7z'.lower()
 
     @property
@@ -65,7 +64,7 @@ class Backup:
             get_7zip(), 'a',
             self.zip_filename,
             self.driver.backup_filename,
-            f'-p{self.cfg.zip_password}' if len(self.cfg.zip_password) > 0 else ''
+            f'-p{ZIP_PASSWORD}' if len(ZIP_PASSWORD) > 0 else ''
         ], stdout=subprocess.DEVNULL)
         process.wait()
 
@@ -77,9 +76,9 @@ class Backup:
     @logger.catch
     def upload(self):
         session = boto3.session.Session()
-        s3 = session.client(**self.cfg.s3_connection)
+        s3 = session.client(**get_s3_connection())
         s3.upload_file(
             self.zip_filename,
-            self.cfg.bucket_name,
+            BUCKET_NAME,
             self.s3_filename
         )

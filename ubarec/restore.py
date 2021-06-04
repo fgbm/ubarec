@@ -6,7 +6,7 @@ import boto3
 import typer
 from loguru import logger
 
-from .config import Config
+from ._defaults import *
 from .drivers import DatabaseBase
 from .handlers import step_function, get_7zip
 
@@ -30,7 +30,6 @@ class Restore:
         :param s3_filename: using a specified file name in the repository for recovery
         :param hostname: override system hostname
         """
-        self.cfg: Config = Config.read()
         self.driver = driver
         self.specified_s3_filename = s3_filename
         self.hostname = hostname
@@ -71,9 +70,9 @@ class Restore:
     def find_latest_backup(self) -> str:
         prefix = f'{self.hostname}__{self.driver.backup_name}__'
         session = boto3.session.Session()
-        s3 = session.client(**self.cfg.s3_connection)
+        s3 = session.client(**get_s3_connection())
 
-        objects = s3.list_objects_v2(Bucket=self.cfg.bucket_name, Prefix=prefix).get('Contents', [])
+        objects = s3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=prefix).get('Contents', [])
         if len(objects) == 0:
             typer.secho('No backups found in the repository', fg=typer.colors.RED)
             raise typer.Exit()
@@ -84,9 +83,9 @@ class Restore:
     @logger.catch
     def download(self):
         session = boto3.session.Session()
-        s3 = session.client(**self.cfg.s3_connection)
+        s3 = session.client(**get_s3_connection())
         s3.download_file(
-            self.cfg.bucket_name,
+            BUCKET_NAME,
             self.s3_filename,
             self.zip_filename
         )
@@ -96,8 +95,8 @@ class Restore:
         process = subprocess.Popen([
             get_7zip(),
             'e', '-y',
-            f'-p{self.cfg.zip_password}' if len(self.cfg.zip_password) > 0 else '',
-            f'-o{self.cfg.temp_path}',
+            f'-p{ZIP_PASSWORD}' if len(ZIP_PASSWORD) > 0 else '',
+            f'-o{TEMP_PATH}',
             self.zip_filename
         ], stdout=subprocess.DEVNULL)
         process.wait()
