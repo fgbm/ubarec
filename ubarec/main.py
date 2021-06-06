@@ -2,8 +2,6 @@ from pathlib import Path
 from typing import Dict, Type, List
 
 import typer
-from appdirs import user_log_dir
-from loguru import logger
 
 from .__init__ import __version__
 from ._defaults import *
@@ -16,14 +14,16 @@ DATABASE_DRIVER: Dict[DatabaseType, Type[DatabaseBase]] = {
     DatabaseType.postgres: DatabasePostgres
 }
 
-LOG_FILENAME = Path(user_log_dir('ubarec', False)) / 'errors.log'
-LOG_FILENAME.parent.mkdir(parents=True, exist_ok=True)
-logger.add(LOG_FILENAME, level='ERROR', rotation="5 MB", diagnose=False)
+if LOG_PATH is not None:
+    logger.add(Path(LOG_PATH) / 'errors.log', level='ERROR', rotation="5 MB", diagnose=False, backtrace=False)
+    if DEBUG:
+        logger.add(Path(LOG_PATH) / 'debug.log', level='DEBUG', rotation="5 MB", diagnose=True)
 
 app = typer.Typer()
 
 
 @app.command()
+@logger.catch(onerror=lambda _: sys.exit(1))
 def backup(
         databases: List[str] = typer.Argument(..., help='Database list')
 ):
@@ -37,6 +37,7 @@ def backup(
 
 
 @app.command()
+@logger.catch(onerror=lambda _: sys.exit(1))
 def restore(
         database: str = typer.Argument(..., help='Database name'),
         do_restore: bool = typer.Option(False, help='Restore database from backup')
