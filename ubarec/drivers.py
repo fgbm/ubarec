@@ -3,7 +3,6 @@ import subprocess
 from abc import ABC, abstractmethod
 
 import pyodbc
-from loguru import logger
 
 from ._defaults import *
 
@@ -51,7 +50,6 @@ class DatabaseBase(DriverMixin, ABC):
 
 
 class DatabasePostgres(DatabaseBase):
-    @logger.catch
     def get_backup_data(self):
         pg_environ = os.environ.copy()
         pg_environ['PGPASSWORD'] = DB_PASS
@@ -61,9 +59,9 @@ class DatabasePostgres(DatabaseBase):
             f'--host={DB_HOST}', f'--port={DB_PORT}', f'--username={DB_USER}',
             f'--file={self.backup_filename}', f'{self.database}'
         ], stdout=subprocess.DEVNULL, env=pg_environ)
-        process.wait()
+        if process.wait() != 0:
+            raise ValueError("Errors occurred during the backup")
 
-    @logger.catch
     def restore_data(self):
         pg_environ = os.environ.copy()
         pg_environ['PGPASSWORD'] = DB_PASS
@@ -73,7 +71,8 @@ class DatabasePostgres(DatabaseBase):
             f'--host={DB_HOST}', f'--port={DB_PORT}', f'--username={DB_USER}',
             f'--dbname={self.database}', self.backup_filename
         ], stdout=subprocess.DEVNULL, env=pg_environ)
-        process.wait()
+        if process.wait() != 0:
+            raise ValueError("Errors occurred during the restore")
 
 
 class DatabaseMsSql(DatabaseBase):
@@ -87,12 +86,10 @@ class DatabaseMsSql(DatabaseBase):
             f'DRIVER={DB_DRIVER}'
         ])
 
-    @logger.catch
     def get_cursor(self):
         connection = pyodbc.connect(self.mssql_connection_string, autocommit=True)
         return connection.cursor()
 
-    @logger.catch
     def get_backup_data(self):
         cursor = self.get_cursor()
         query = f"BACKUP DATABASE [{self.database}] TO DISK='{self.backup_filename}' WITH NOFORMAT, NOINIT, SKIP, NOREWIND;"
@@ -100,7 +97,6 @@ class DatabaseMsSql(DatabaseBase):
         while cursor.nextset():
             pass
 
-    @logger.catch
     def restore_data(self):
         cursor = self.get_cursor()
         query = f"RESTORE DATABASE [{self.database}] FROM DISK='{self.backup_filename}' WITH REPLACE;"
