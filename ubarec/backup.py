@@ -3,7 +3,6 @@ import socket
 import subprocess
 
 import boto3
-from loguru import logger
 
 from ._defaults import *
 from .drivers import DatabaseBase
@@ -58,22 +57,19 @@ class Backup:
     def zip_filename(self) -> str:
         return f'{self.driver.backup_filename}.7z'
 
-    @logger.catch
     def compress(self):
         process = subprocess.Popen([
             get_7zip(), 'a',
             self.zip_filename,
             self.driver.backup_filename,
-            f'-p{ZIP_PASSWORD}' if len(ZIP_PASSWORD) > 0 else ''
+            f'-p{ZIP_PASSWORD}' if ZIP_PASSWORD is not None and len(ZIP_PASSWORD) > 0 else ''
         ], stdout=subprocess.DEVNULL)
         process.wait()
 
-    @logger.catch
     def clean(self):
         os.remove(self.zip_filename)
         os.remove(self.driver.backup_filename)
 
-    @logger.catch
     def upload(self):
         session = boto3.session.Session()
         s3 = session.client(**get_s3_connection())

@@ -4,7 +4,6 @@ import subprocess
 
 import boto3
 import typer
-from loguru import logger
 
 from ._defaults import *
 from .drivers import DatabaseBase
@@ -66,21 +65,18 @@ class Restore:
     def zip_filename(self):
         return f'{self.driver.backup_filename}.7z'
 
-    @logger.catch
     def find_latest_backup(self) -> str:
-        prefix = f'{self.hostname}__{self.driver.backup_name}__'
+        prefix = f'{self.hostname}__{self.driver.backup_name}__'.lower()
         session = boto3.session.Session()
         s3 = session.client(**get_s3_connection())
 
         objects = s3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=prefix).get('Contents', [])
         if len(objects) == 0:
-            typer.secho('No backups found in the repository', fg=typer.colors.RED)
-            raise typer.Exit()
+            raise ValueError(f"No backups found in the repository by prefix: '{prefix}'")
 
         latest = sorted(objects, key=lambda obj: obj['LastModified'], reverse=True)[0]
         return latest['Key']
 
-    @logger.catch
     def download(self):
         session = boto3.session.Session()
         s3 = session.client(**get_s3_connection())
@@ -90,18 +86,16 @@ class Restore:
             self.zip_filename
         )
 
-    @logger.catch
     def decompress(self):
         process = subprocess.Popen([
             get_7zip(),
             'e', '-y',
-            f'-p{ZIP_PASSWORD}' if len(ZIP_PASSWORD) > 0 else '',
+            f'-p{ZIP_PASSWORD}' if ZIP_PASSWORD is not None and len(ZIP_PASSWORD) > 0 else '',
             f'-o{TEMP_PATH}',
             self.zip_filename
         ], stdout=subprocess.DEVNULL)
         process.wait()
 
-    @logger.catch
     def clean(self):
         os.remove(self.zip_filename)
         if self.do_restore:
