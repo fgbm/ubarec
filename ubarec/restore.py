@@ -68,7 +68,7 @@ class Restore:
     def find_latest_backup(self) -> str:
         prefix = f'{self.hostname}__{self.driver.backup_name}__'.lower()
         session = boto3.session.Session()
-        s3 = session.client(**settings.get_s3_connection())
+        s3 = session.client(**settings.s3_connection)
 
         objects = s3.list_objects_v2(Bucket=settings.bucket_name, Prefix=prefix).get('Contents', [])
         if len(objects) == 0:
@@ -79,7 +79,7 @@ class Restore:
 
     def download(self):
         session = boto3.session.Session()
-        s3 = session.client(**settings.get_s3_connection())
+        s3 = session.client(**settings.s3_connection)
         s3.download_file(
             settings.bucket_name,
             self.s3_filename,

@@ -72,7 +72,7 @@ class Backup:
 
     def upload(self):
         session = boto3.session.Session()
-        s3 = session.client(**settings.get_s3_connection())
+        s3 = session.client(**settings.s3_connection)
         s3.upload_file(
             self.zip_filename,
             settings.bucket_name,

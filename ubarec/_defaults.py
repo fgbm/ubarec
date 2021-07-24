@@ -35,7 +35,8 @@ class Settings(BaseSettings):
     class Config:
         env_prefix = 'UBAREC_'
 
-    def get_s3_connection(self):
+    @property
+    def s3_connection(self):
         return {
             'service_name'         : self.service_name,
             'endpoint_url'         : self.endpoint_url,
