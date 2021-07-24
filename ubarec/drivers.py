@@ -4,7 +4,9 @@ from abc import ABC, abstractmethod
 
 import pyodbc
 
-from ._defaults import *
+from ._defaults import Settings
+
+settings = Settings()
 
 
 class DriverMixin(ABC):
@@ -40,7 +42,7 @@ class DatabaseBase(DriverMixin, ABC):
         self.database = database
 
     def get_backup_filename(self):
-        return os.path.join(TEMP_PATH, f'{self.database}.bak')
+        return os.path.join(settings.temp_path, f'{self.database}.bak')
 
     def get_backup_name(self):
         return self.database
@@ -52,11 +54,11 @@ class DatabaseBase(DriverMixin, ABC):
 class DatabasePostgres(DatabaseBase):
     def get_backup_data(self):
         pg_environ = os.environ.copy()
-        pg_environ['PGPASSWORD'] = DB_PASS
+        pg_environ['PGPASSWORD'] = settings.db_password
 
         process = subprocess.Popen([
             'pg_dump', '--format=custom',
-            f'--host={DB_HOST}', f'--port={DB_PORT}', f'--username={DB_USER}',
+            f'--host={settings.db_host}', f'--port={settings.db_port}', f'--username={settings.db_username}',
             f'--file={self.backup_filename}', f'{self.database}'
         ], stdout=subprocess.DEVNULL, env=pg_environ)
         if process.wait() != 0:
@@ -64,11 +66,11 @@ class DatabasePostgres(DatabaseBase):
 
     def restore_data(self):
         pg_environ = os.environ.copy()
-        pg_environ['PGPASSWORD'] = DB_PASS
+        pg_environ['PGPASSWORD'] = settings.db_password
 
         process = subprocess.Popen([
             'pg_restore', '--clean', '--format=custom',
-            f'--host={DB_HOST}', f'--port={DB_PORT}', f'--username={DB_USER}',
+            f'--host={settings.db_host}', f'--port={settings.db_port}', f'--username={settings.db_username}',
             f'--dbname={self.database}', self.backup_filename
         ], stdout=subprocess.DEVNULL, env=pg_environ)
         if process.wait() != 0:
@@ -79,11 +81,11 @@ class DatabaseMsSql(DatabaseBase):
     @property
     def mssql_connection_string(self):
         return ';'.join([
-            f'SERVER={DB_HOST}',
-            f'PORT={DB_PORT}',
-            f'UID={DB_USER}',
-            f'PWD={DB_PASS}',
-            f'DRIVER={DB_DRIVER}'
+            f'SERVER={settings.db_host}',
+            f'PORT={settings.db_port}',
+            f'UID={settings.db_username}',
+            f'PWD={settings.db_password}',
+            f'DRIVER={settings.db_driver}'
         ])
 
     def get_cursor(self):

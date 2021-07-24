@@ -5,7 +5,7 @@ import subprocess
 import boto3
 import typer
 
-from ._defaults import *
+from ._defaults import settings
 from .drivers import DatabaseBase
 from .handlers import step_function, get_7zip
 
@@ -68,9 +68,9 @@ class Restore:
     def find_latest_backup(self) -> str:
         prefix = f'{self.hostname}__{self.driver.backup_name}__'.lower()
         session = boto3.session.Session()
-        s3 = session.client(**get_s3_connection())
+        s3 = session.client(**settings.get_s3_connection())
 
-        objects = s3.list_objects_v2(Bucket=BUCKET_NAME, Prefix=prefix).get('Contents', [])
+        objects = s3.list_objects_v2(Bucket=settings.bucket_name, Prefix=prefix).get('Contents', [])
         if len(objects) == 0:
             raise ValueError(f"No backups found in the repository by prefix: '{prefix}'")
 
@@ -79,9 +79,9 @@ class Restore:
 
     def download(self):
         session = boto3.session.Session()
-        s3 = session.client(**get_s3_connection())
+        s3 = session.client(**settings.get_s3_connection())
         s3.download_file(
-            BUCKET_NAME,
+            settings.bucket_name,
             self.s3_filename,
             self.zip_filename
         )
@@ -90,8 +90,8 @@ class Restore:
         process = subprocess.Popen([
             get_7zip(),
             'e', '-y',
-            f'-p{ZIP_PASSWORD}' if ZIP_PASSWORD is not None and len(ZIP_PASSWORD) > 0 else '',
-            f'-o{TEMP_PATH}',
+            f'-p{settings.zip_password}' if settings.zip_password is not None and len(settings.zip_password) > 0 else '',
+            f'-o{settings.temp_path}',
             self.zip_filename
         ], stdout=subprocess.DEVNULL)
         process.wait()

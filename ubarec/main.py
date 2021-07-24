@@ -1,10 +1,11 @@
-from pathlib import Path
+import sys
 from typing import Dict, Type, List
 
 import typer
+from loguru import logger
 
 from .__init__ import __version__
-from ._defaults import *
+from ._defaults import settings, DatabaseType
 from .backup import Backup
 from .drivers import DatabaseBase, DatabaseMsSql, DatabasePostgres
 from .restore import Restore
@@ -14,10 +15,14 @@ DATABASE_DRIVER: Dict[DatabaseType, Type[DatabaseBase]] = {
     DatabaseType.postgres: DatabasePostgres
 }
 
-if LOG_PATH is not None:
-    logger.add(Path(LOG_PATH) / 'errors.log', level='ERROR', rotation="5 MB", diagnose=False, backtrace=False)
-    if DEBUG:
-        logger.add(Path(LOG_PATH) / 'debug.log', level='DEBUG', rotation="5 MB", diagnose=True)
+if settings.log_path is not None:
+    logger.add(
+        settings.log_path / 'errors.log',
+        level='DEBUG' if settings.debug else 'ERROR',
+        rotation='5 MB',
+        diagnose=False,
+        backtrace=False
+    )
 
 app = typer.Typer()
 
@@ -29,7 +34,7 @@ def backup(
 ):
     for database in databases:
         typer.echo(f'Process backup {database}')
-        driver = DATABASE_DRIVER[DB_TYPE](database)
+        driver = DATABASE_DRIVER[settings.db_type](database)
         Backup(driver)
         typer.echo('')
 
@@ -46,7 +51,7 @@ def restore(
         typer.confirm('Are you sure about recovery? The current data will be changed!', abort=True)
 
     typer.echo(f'Process restore {database}')
-    driver = DATABASE_DRIVER[DB_TYPE](database)
+    driver = DATABASE_DRIVER[settings.db_type](database)
     Restore(driver, do_restore=do_restore)
 
     typer.echo('That\'s all, folks!')

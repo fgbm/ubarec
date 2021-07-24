@@ -4,7 +4,7 @@ import subprocess
 
 import boto3
 
-from ._defaults import *
+from ._defaults import settings
 from .drivers import DatabaseBase
 from .handlers import step_function, get_7zip, get_now_timestamp
 
@@ -62,7 +62,7 @@ class Backup:
             get_7zip(), 'a',
             self.zip_filename,
             self.driver.backup_filename,
-            f'-p{ZIP_PASSWORD}' if ZIP_PASSWORD is not None and len(ZIP_PASSWORD) > 0 else ''
+            f'-p{settings.zip_password}' if settings.zip_password is not None and len(settings.zip_password) > 0 else ''
         ], stdout=subprocess.DEVNULL)
         process.wait()
 
@@ -72,9 +72,9 @@ class Backup:
 
     def upload(self):
         session = boto3.session.Session()
-        s3 = session.client(**get_s3_connection())
+        s3 = session.client(**settings.get_s3_connection())
         s3.upload_file(
             self.zip_filename,
-            BUCKET_NAME,
+            settings.bucket_name,
             self.s3_filename
         )
