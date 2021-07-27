@@ -60,23 +60,24 @@ In recovery mode Ubarec performs the following algorithm:
 According to the principles of the [12-factor application](https://12factor.net/), 
 Ubarec takes settings from environment variables.
 
-| Name                  | Required? | Default value                   | Description                                             |
-|-----------------------|-----------|---------------------------------|---------------------------------------------------------|
-| `UBAREC_ENDPOINT_URL` | No        | https://storage.yandexcloud.net | S3 object storage entry point                           |
-| `UBAREC_REGION_NAME`  | No        | ru-central1                     | Region name                                             |
-| `UBAREC_ACCESS_KEY`   | Yes       |                                 | Bucket access key ID                                    |
-| `UBAREC_SECRET_KEY`   | Yes       |                                 | Bucket secret key                                       |
-| `UBAREC_BUCKET_NAME`  | Yes       |                                 | Bucket name                                             |
-| `UBAREC_ZIP_PASSWORD` | No        |                                 | ZIP password                                            |
-| `UBAREC_DB_TYPE`      | No        | mssql                           | Database type ('mssql' or 'postgres')                   |
-| `UBAREC_DB_HOST`      | No        | localhost                       | Database server                                         |
-| `UBAREC_DB_PORT`      | No        |                                 | Database connection port                                |
-| `UBAREC_DB_USERNAME`  | Yes       |                                 | User name to connect to the database                    |
-| `UBAREC_DB_PASSWORD`  | Yes       |                                 | Password to connect to the database                     |
-| `UBAREC_DB_DRIVER`    | No        |                                 | ODBC driver to connect to the database (used for MSSQL) |
-| `UBAREC_TEMP_PATH`    | No        | User temporary files storage    | Path for storing temporary files                        |
-| `UBAREC_LOG_PATH`     | No        |                                 | Log storage path                                        |
-| `UBAREC_DEBUG`        | No        | False                           | Debug mode                                              |
+| Name                     | Required? | Default value                     | Description                                             |
+| ------------------------ | --------- | --------------------------------- | ------------------------------------------------------- |
+| `UBAREC_ENDPOINT_URL`    | No        | `https://storage.yandexcloud.net` | S3 object storage entry point                           |
+| `UBAREC_REGION_NAME`     | No        | `ru-central1`                     | Region name                                             |
+| `UBAREC_ACCESS_KEY`      | Yes       |                                   | Bucket access key ID                                    |
+| `UBAREC_SECRET_KEY`      | Yes       |                                   | Bucket secret key                                       |
+| `UBAREC_BUCKET_NAME`     | Yes       |                                   | Bucket name                                             |
+| `UBAREC_ZIP_PASSWORD`    | No        |                                   | ZIP password                                            |
+| `UBAREC_DB_TYPE`         | No        | `mssql`                           | Database type ('mssql' or 'postgres')                   |
+| `UBAREC_DB_HOST`         | No        | `localhost`                       | Database server                                         |
+| `UBAREC_DB_PORT`         | No        |                                   | Database connection port                                |
+| `UBAREC_DB_USERNAME`     | Yes       |                                   | User name to connect to the database                    |
+| `UBAREC_DB_PASSWORD`     | Yes       |                                   | Password to connect to the database                     |
+| `UBAREC_DB_DRIVER`       | No        |                                   | ODBC driver to connect to the database (used for MSSQL) |
+| `UBAREC_TEMP_PATH`       | No        | User temporary files storage      | Path for storing temporary files                        |
+| `UBAREC_LOG_PATH`        | No        |                                   | Log storage path                                        |
+| `UBAREC_DEBUG`           | No        | `False`                           | Debug mode                                              |
+| `UBAREC_FILENAME_PREFIX` | Нет       | `{hostname}__{backup_name}__`     | Prefix of file name uploaded to S3 storage              |
 
 ## Backup
 
