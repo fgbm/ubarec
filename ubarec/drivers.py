@@ -35,6 +35,12 @@ class DriverMixin(ABC):
     def backup_filename(self):
         return self.get_backup_filename()
 
+    def get_filename_prefix(self, hostname: str):
+        return settings.filename_prefix.format(
+            hostname=hostname,
+            backup_name=self.backup_name
+        ).lower()
+
 
 class DatabaseBase(DriverMixin, ABC):
     def __init__(self, database: str):

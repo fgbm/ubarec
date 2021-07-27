@@ -66,7 +66,7 @@ class Restore:
         return f'{self.driver.backup_filename}.7z'
 
     def find_latest_backup(self) -> str:
-        prefix = f'{self.hostname}__{self.driver.backup_name}__'.lower()
+        prefix = self.driver.get_filename_prefix(self.hostname)
         session = boto3.session.Session()
         s3 = session.client(**settings.s3_connection)
 

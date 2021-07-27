@@ -51,7 +51,8 @@ class Backup:
 
     @property
     def s3_filename(self):
-        return f'{self.hostname}__{self.driver.backup_name}__{get_now_timestamp()}.7z'.lower()
+        prefix = self.driver.get_filename_prefix(self.hostname)
+        return f'{prefix}{get_now_timestamp()}.7z'.lower()
 
     @property
     def zip_filename(self) -> str:

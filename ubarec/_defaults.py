@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     temp_path: DirectoryPath = tempfile.gettempdir()
     log_path: DirectoryPath = None
     debug: bool = False
+    filename_prefix: str = '{hostname}__{backup_name}__'
 
     class Config:
         env_prefix = 'UBAREC_'
