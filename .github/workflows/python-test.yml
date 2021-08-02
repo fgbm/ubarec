@@ -1,0 +1,68 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  runner-job:
+    # Containers must run in Linux based operating systems
+    runs-on: ubuntu-latest
+
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ 3.7, 3.8, 3.9 ]
+
+    env:
+      UBAREC_ACCESS_KEY: ${{ secrets.UBAREC_ACCESS_KEY }}
+      UBAREC_SECRET_KEY: ${{ secrets.UBAREC_SECRET_KEY }}
+      UBAREC_BUCKET_NAME: ${{ secrets.UBAREC_BUCKET_NAME }}
+      UBAREC_ZIP_PASSWORD: ${{ secrets.UBAREC_ZIP_PASSWORD }}
+      UBAREC_DB_TYPE: postgres
+      UBAREC_DB_USERNAME: postgres
+      UBAREC_DB_PASSWORD: postgres
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          sudo apt-get install unixodbc-dev p7zip-full
+          python -m pip install --upgrade pip
+          python -m pip install flake8 pytest
+          python setup.py egg_info
+          pip install -r ubarec.egg-info/requires.txt
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --extend-ignore=E203 --max-complexity=10 --max-line-length=127 --statistics
+      - name: Test with pytest
+        run: |
+          pytest
