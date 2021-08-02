@@ -81,6 +81,7 @@ jobs:
           UBAREC_ZIP_PASSWORD: ${{ secrets.UBAREC_ZIP_PASSWORD }}
           UBAREC_DB_TYPE: postgres
           UBAREC_DB_HOST: localhost
+          UBAREC_DB_PORT: 5432
           UBAREC_DB_USERNAME: postgres
           UBAREC_DB_PASSWORD: postgres
           TEST_DATABASE: ubarec_test_github
