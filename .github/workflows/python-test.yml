@@ -62,7 +62,7 @@ jobs:
       - name: Create test database
         run: |
           psql -c "create database $TEST_DATABASE"
-          psql -d "$TEST_DATABASE" -c "create database test(id SERIAL PRIMARY KEY, key varchar(255) NOT NULL, value varchar(255) NOT NULL)"
+          psql -d "$TEST_DATABASE" -c "create table test(id SERIAL PRIMARY KEY, key varchar(255) NOT NULL, value varchar(255) NOT NULL)"
           psql -d "$TEST_DATABASE" -c "insert into test (key, value) values('run_id', '${{ github.run_id }}')"
         env:
           PGUSER: postgres
