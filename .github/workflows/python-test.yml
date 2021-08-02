@@ -43,7 +43,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get install unixodbc-dev p7zip-full
+          sudo apt-get install unixodbc-dev p7zip-full postgresql-client
           python -m pip install --upgrade pip
           python -m pip install flake8 pytest
           python setup.py egg_info
@@ -56,6 +56,13 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --extend-ignore=E203 --max-complexity=10 --max-line-length=127 --statistics
 
+      - name: Create test database
+        run: |
+          psql --username "postgres" -c "create database $TEST_DATABASE"
+        env:
+          PGPASSWORD: postgres
+          TEST_DATABASE: ubarec_test_github
+
       - name: Test with pytest
         run: |
           pytest
@@ -67,3 +74,4 @@ jobs:
           UBAREC_DB_TYPE: postgres
           UBAREC_DB_USERNAME: postgres
           UBAREC_DB_PASSWORD: postgres
+          TEST_DATABASE: ubarec_test_github
